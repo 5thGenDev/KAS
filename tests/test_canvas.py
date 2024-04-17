@@ -54,9 +54,19 @@ class ExampleModelNoneSpatial(nn.Module):
 
 def test_demo():
     net = ExampleModel()
+    for name, child in net.named_children():
+        print(name, type(child))                            # print layer name and what nn.Module class it actually is
+
+    # Sample new layer
     pack = canvas.sample(net, example_input=torch.zeros(1, 3, 32, 32))
-    net = canvas.replace(net, pack.module, 'cpu')
+    print('--------------------------\n')
+    print(f"Sampled kernel code: {pack.torch_code}")        # Print PyTorch implementation of the sampled kernel
+
     # Do something with your new net ...!
+    net = canvas.replace(net, pack.module, 'cpu')
+    print('--------------------------\n')
+    for name, child in net.named_children():
+        print(name, type(child))
 
 
 def test_seed():
@@ -108,3 +118,7 @@ def test_empty_sample():
 def test_kernel_pack_hash():
     # Debug sampling produces the same kernel.
     canvas.debug_sample()
+
+if __name__ == '__main__':
+    test_demo()
+    test_seed()
